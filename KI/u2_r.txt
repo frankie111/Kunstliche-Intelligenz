@@ -1,0 +1,116 @@
+Gegeben seien die folgenden Implementierungen der Funktion tree_search_1:
+
+import collections
+import heapq
+import math
+
+class Queue:
+    def __init__(self):
+        self.elements = collections.deque()
+
+    def empty(self):
+        return len(self.elements) == 0
+
+    def put(self, x):
+        self.elements.append(x)
+
+    def get(self):
+        return self.elements.popleft()
+
+class Stack:
+    def __init__(self):
+        self.elements = []
+
+    def empty(self):
+        return len(self.elements) == 0
+
+    def put(self, x):
+        self.elements.append(x)
+
+    def get(self):
+        return self.elements.pop()
+
+
+class PriorityQueue:
+    def __init__(self):
+        self.elements = []
+
+    def empty(self):
+        return len(self.elements) == 0
+
+    def put(self, item, priority):
+        heapq.heappush(self.elements, (priority, item))
+
+    def get(self):
+        return heapq.heappop(self.elements)[1]
+
+
+class SimpleGraph:
+    def __init__(self,edges):
+        self.edges = edges
+
+    def neighbors(self, id):
+        return self.edges[id]
+
+class LabelledGraph:
+    def __init__(self,edges):
+        self.edges = edges
+
+    def neighbors(self, id):
+        return self.edges[id]
+
+def tree_search_1(queue,graph, start):
+    # return "came_from"
+    frontier = queue
+    frontier.put(start)
+    came_from = {}
+    came_from[start] = None
+
+    while not frontier.empty():
+        current = frontier.get()
+        print("visiting: ",end="")
+        print(current)
+        for next in graph.neighbors(current):
+            if next not in came_from:
+                frontier.put(next)
+                came_from[next] = current
+
+    return came_from
+Wie kann diese Funktion für die Implementierung einer Breiten- und Tiefensuche genutzt werden? Worin unterscheiden sich diese?
+Implementieren Sie eine breadthFirstSearch, die die Funktion treeSearch_1 benutzt, um breadth first search auszuführen
+Implementieren Sie eine Funktion depthFirstSearch, die die Funktion treeSearch_1 benutzt, um depth first search auszuführen.
+def breadth_first_search_1(graph,start):
+    #TODO
+    return None
+def depth_first_search_1(graph,start):
+    #TODO
+    return None
+Aufgabe 2: Suchen in Graphen
+Verwenden Sie die Breiten- und Tiefensuche auf dem unten angegebenen Graphen, ausgehend von Knoten A.
+Implementieren Sie eine erweiterte Version der tree-search, bei der auch ein Zielknoten angegeben wird. Die Suche wird nur so lange ausgeführt, bis der Zielknoten erreicht wurde.
+Implementieren Sie erweiterte Versionen der Breiten- und Tiefensuche, basierend auf der neuen Tree-Search. Verwenden Sie diese Algorithmen, um von Knoten A einen Pfad zu Knoten E zu finden. Wie unterscheiden sich die Implementierungen?
+edges = {
+    'A': ['B'],
+    'B': ['A', 'C', 'D'],
+    'C': ['A'],
+    'D': ['E', 'A'],
+    'E': ['B']
+}
+example_graph = SimpleGraph(edges)
+
+def tree_search_2(queue,graph, start, goal):
+    #TODO
+    return None
+
+
+def breadth_first_search_2(graph,start,goal):
+    #TODO
+    return None
+def depth_first_search_2(graph,start,goal):
+    #TODO
+    return None
+
+breadth_first_search_1(example_graph, 'A')
+depth_first_search_1(example_graph, 'A')
+breadth_first_search_2(example_graph, 'A', 'E')
+depth_first_search_2(example_graph, 'A', 'E')

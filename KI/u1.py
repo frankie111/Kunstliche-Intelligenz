@@ -67,7 +67,6 @@ def ReflexVacuumAgent():
             return 'Right'
         if location == loc_B:
             return 'Left'
-        return 'NoOp'
 
     return Agent(program)
 
@@ -245,7 +244,7 @@ class TwoDimensionalVacuumEnvironment(Environment):
 
     def percept(self, agent):
         """Return the agent's location and the location status (Dirty/Clean)."""
-        return (agent.location, self.status[agent.location])
+        return agent.location, self.status[agent.location]
 
     def execute_action(self, agent, action):
         """Change agent's location and/or location's status; track performance."""
