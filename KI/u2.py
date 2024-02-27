@@ -81,6 +81,37 @@ def dfs(map: Map, start, goal):
     return came_from
 
 
+# Hilfsfunktion zur Rekonstruktion des Pfades
+def reconstruct_path(came_from, start, goal):
+    current = goal
+    path = []
+    while current != start:  # Rückverfolgung vom Ziel zum Start
+        path.append(current)
+        current = came_from[current]
+    path.append(start)  # Optional: Füge den Startpunkt hinzu
+    path.reverse()  # Umkehrung des Pfades, um ihn von Start zu Ziel zu ordnen
+    return path
+
+
+def draw_path(path, start, goal):
+    print(path)
+
+    # Pfad rekonstruieren
+    reconstructed_path = reconstruct_path(path, start, goal)
+
+    # Visualisierung der Karte mit dem Pfad
+    plt.imshow(m, cmap='Purples')
+    x_coords, y_coords = zip(*reconstructed_path)
+    plt.plot(y_coords, x_coords, color='yellow', linewidth=3)  # Pfad visualisieren
+    plt.scatter(y_coords[0], x_coords[0], color='red', label='Start')  # Startpunkt markieren
+    plt.scatter(y_coords[-1], x_coords[-1], color='green', label='Goal')  # Zielpunkt markieren
+    plt.legend()
+    plt.show()
+
+    # Ausgabe des rekonstruierten Pfads
+    # reconstructed_path
+
+
 m = np.array(
     [[0, 1, 0, 0, 0, 0, 0],
      [0, 1, 0, 1, 0, 0, 1],
@@ -90,13 +121,8 @@ m = np.array(
      [0, 0, 0, 1, 1, 0, 0]])
 mm = Map(m)
 mm.neighbors((4, 1))
-
 start = (0, 0)
-goal = (5, 6)
+goal = (0, 6)
 path = dfs(mm, start, goal)
-print(path)
 
-# Visualisierung der Karte
-plt.imshow(m, cmap='Purples')
-plt.colorbar()
-plt.show()
+draw_path(path, start, goal)
