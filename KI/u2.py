@@ -81,7 +81,7 @@ def dfs(map: Map, start, goal):
 
         # Ziel gefunden
         if current == goal:
-            break
+            return make_path(came_from, start, goal)
 
         for next in map.neighbors(current):
             # Wenn der Nachbarknoten noch nicht besucht wurde, füge es in dem Stack hinzu
@@ -89,7 +89,7 @@ def dfs(map: Map, start, goal):
                 stack.put(next)
                 came_from[next] = current  # Speichere den Vorgänger
 
-    return make_path(came_from, start, goal)  # Gib den Weg zurück
+    return None  # Kein Pfad gefunden
 
 
 def astar(map: Map, start, goal):
@@ -105,7 +105,7 @@ def astar(map: Map, start, goal):
         current = p_queue.get()
 
         if current == goal:
-            break  # Ziel gefunden
+            return make_path(came_from, start, goal)  # Ziel gefunden
 
         for next in map.neighbors(current):
             new_cost = cost[current] + distance(current, next)
@@ -115,11 +115,14 @@ def astar(map: Map, start, goal):
                 p_queue.put(next, priority)
                 came_from[next] = current  # Pfad aktualisieren
 
-    return make_path(came_from, start, goal)
+    return None  # pfad nicht gefunden
 
 
 def draw_path(search_alg, map, start, goal):
     path = search_alg(map, start, goal)
+    if path is None:
+        print(f"Es gibt keinen Pfad von {start} zu {goal}")
+        return
     print(path)
 
     # Visualization of the map with the path
@@ -146,7 +149,7 @@ mm = Map(m)
 mm.neighbors((4, 1))
 
 _start = (0, 0)
-_goal = (5, 6)
+_goal = (5, 3)
 
 draw_path(dfs, mm, _start, _goal)
 draw_path(astar, mm, _start, _goal)
