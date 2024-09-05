@@ -13,20 +13,20 @@ class Map:
         self.m = m
 
     def neighbors(self, cell):
-        nrow, ncol = m.shape
+        nrow, ncol = self.m.shape
         x, y = cell
         nb = []
         if x > 0:
-            if m[x - 1, y] == 0:
+            if self.m[x - 1, y] == 0:
                 nb = nb + [(x - 1, y)]
         if x < (nrow - 1):
-            if m[x + 1, y] == 0:
+            if self.m[x + 1, y] == 0:
                 nb = nb + [(x + 1, y)]
         if y > 0:
-            if m[x, y - 1] == 0:
+            if self.m[x, y - 1] == 0:
                 nb = nb + [(x, y - 1)]
         if y < (ncol - 1):
-            if m[x, y + 1] == 0:
+            if self.m[x, y + 1] == 0:
                 nb = nb + [(x, y + 1)]
         return nb
 
@@ -43,6 +43,20 @@ class PriorityQueue:
 
     def get(self):
         return heapq.heappop(self.elements)[1]
+
+
+class Queue:
+    def __init__(self):
+        self.elements = []
+
+    def empty(self):
+        return len(self.elements) == 0
+
+    def enqueue(self, x):
+        self.elements.append(x)
+
+    def dequeue(self):
+        return self.elements.pop(0)
 
 
 class Stack:
@@ -92,6 +106,27 @@ def dfs(map: Map, start, goal):
     return None  # Kein Pfad gefunden
 
 
+def bfs(map: Map, start, goal):
+    queue = Queue()
+    queue.enqueue(start)
+    came_from = {start: None}
+
+    while not queue.empty():
+        current = queue.dequeue()
+
+        # Ziel gefunden
+        if current == goal:
+            return make_path(came_from, start, goal)
+
+        for next in map.neighbors(current):
+            # Wenn der Nachbarknoten noch nicht besucht wurde, füge es in dem Queue hinzu
+            if next not in came_from:
+                queue.enqueue(next)
+                came_from[next] = current  # Speichere Vorgänger
+
+    return None  # Kein Pfad gefunden
+
+
 def astar(map: Map, start, goal):
     def heuristic(a):
         return distance(a, goal)
@@ -120,22 +155,26 @@ def astar(map: Map, start, goal):
 
 def draw_path(search_alg, map, start, goal):
     path = search_alg(map, start, goal)
-    if path is None:
-        print(f"Es gibt keinen Pfad von {start} zu {goal}")
-        return
-    print(path)
+    if path is not None:
+        print(path)
 
     # Visualization of the map with the path
     fig, ax = plt.subplots()
     ax.imshow(map.m, cmap='Purples', interpolation='nearest')
-    x_coords, y_coords = zip(*path)
-    ax.plot(y_coords, x_coords, color='black', linewidth=3)  # Visualize path
-    ax.scatter(y_coords[0], x_coords[0], color='red', label='Start', s=250)  # Mark start point
-    ax.scatter(y_coords[-1], x_coords[-1], color='green', label='Goal', s=250)  # Mark goal point
+    if path is not None:
+        x_coords, y_coords = zip(*path)
+        ax.plot(y_coords, x_coords, color='black', linewidth=3)  # Visualize path
+
+    ax.scatter(start[1], start[0], color='red', label='Start', s=250)  # Mark start point
+    ax.scatter(goal[1], goal[0], color='green', label='Goal', s=250)  # Mark goal point
     ax.legend()
 
     ax.set_title(search_alg.__name__, fontsize=24)
     plt.show()
+
+    if path is None:
+        print(f"Es gibt keinen Pfad von {start} zu {goal}")
+        return
 
 
 m = np.array(
@@ -145,11 +184,26 @@ m = np.array(
      [0, 1, 0, 1, 0, 0, 0],
      [0, 0, 0, 1, 1, 0, 0],
      [0, 0, 0, 1, 1, 0, 0]])
-mm = Map(m)
-mm.neighbors((4, 1))
 
-_start = (0, 0)
-_goal = (5, 3)
+larger_map = np.array(
+    [[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+     [0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0],
+     [0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+     [0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0],
+     [0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0],
+     [0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0],
+     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0],
+     [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+     [0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0],
+     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+     [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]])
 
-draw_path(dfs, mm, _start, _goal)
-draw_path(astar, mm, _start, _goal)
+mm = Map(larger_map)
+
+_start = (0, 1)
+_goal = (11, 9)
+
+# draw_path(dfs, mm, _start, _goal)
+draw_path(bfs, mm, _start, _goal)
+# draw_path(astar, mm, _start, _goal)
